@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity
         // Finds the TextViews
         searchResultsHeader = (TextView) findViewById(R.id.tv_search_result);
         noItems = (TextView) findViewById(R.id.tv_no_items);
-        noItems.setVisibility(View.GONE);
         // Finds the progressBar in the layout
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -77,6 +76,14 @@ public class MainActivity extends AppCompatActivity
 
         // Start loading the information in a background task
         loaderManager.initLoader(BOOK_LOADER_ID, null, this);
+
+        // If the activity is just created, show TextView with description
+        if (firstRun == true) {
+            noItems.setText(R.string.first_run);
+            noItems.setVisibility(View.VISIBLE);
+        } else {
+            noItems.setVisibility(View.GONE);
+        }
 
         // Setting what happens when the Search button is clicked
         searchBtn.setOnClickListener(new View.OnClickListener() {

@@ -4,4 +4,5 @@
     <string name="tv_no_items">No results - Try again</string>
     <string name="no_internet">No Internet connection</string>
     <string name="search_hint">Search books</string>
+    <string name="first_run">Use the search field above to search for books</string>
 </resources>
