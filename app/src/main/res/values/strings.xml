@@ -3,4 +3,5 @@
     <string name="tv_results">Showing results for query</string>
     <string name="tv_no_items">No results - Try again</string>
     <string name="no_internet">No Internet connection</string>
+    <string name="search_hint">Search books</string>
 </resources>
