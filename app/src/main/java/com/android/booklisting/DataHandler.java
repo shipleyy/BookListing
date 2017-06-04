@@ -1,5 +1,6 @@
 package com.android.booklisting;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
@@ -21,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DataHandler {
+class DataHandler {
 
     private static final String LOG_TAG = DataHandler.class.getName();
 
     private DataHandler() {
     }
 
-    public static ArrayList<Book> getBookData(String requestUrl) {
+    public static ArrayList<Book> getBookData(Context context, String requestUrl) {
 
         URL url = createUrl(requestUrl);
 
@@ -41,12 +42,11 @@ public class DataHandler {
         }
 
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        ArrayList<Book> bookList = parseBooks(jsonResponse);
 
-        return bookList;
+        return parseBooks(context, jsonResponse);
     }
 
-    private static ArrayList<Book> parseBooks(String jsonResponse) {
+    private static ArrayList<Book> parseBooks(Context context, String jsonResponse) {
 
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(jsonResponse)) {
@@ -79,27 +79,31 @@ public class DataHandler {
                 // Since there might be more than one author, save the names to a new ArrayList
                 List<String> allAuthors = new ArrayList<>();
 
-                JSONArray bookAuthors = volumeInfo.getJSONArray("authors");
-                for (int j = 0; j < bookAuthors.length(); j++) {
-                    String bookAuthorName = bookAuthors.getString(j);
-                    allAuthors.add(bookAuthorName);
-                }
+                // Checks if the book has any authors
+                String bookAuthorsComplete;
+                if (volumeInfo.has("authors")) {
+
+                    JSONArray bookAuthors = volumeInfo.getJSONArray("authors");
+                    for (int j = 0; j < bookAuthors.length(); j++) {
+                        String bookAuthorName = bookAuthors.getString(j);
+                        allAuthors.add(bookAuthorName);
+                    }
+
+                    if (bookAuthors.length() > 1) {
+                        // Take all the authors names and put into one long String
+                        StringBuilder builder = new StringBuilder();
+                        for (String bookAuthorName : allAuthors) {
+                            builder.append(bookAuthorName + ", ");
+                        }
+                        // removing the last comma and space from end of the last name in the list
+                        builder.setLength(builder.length() - 2);
+                        bookAuthorsComplete = builder.toString();
+                    } else bookAuthorsComplete = allAuthors.get(0);
+                } else bookAuthorsComplete = context.getString(R.string.no_author);
+
                 JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
 
                 String bookCoverUrl = imageLinks.getString("thumbnail");
-
-                String bookAuthorsComplete;
-
-                if (bookAuthors.length() > 1) {
-                    // Take all the authors names and put into one long String
-                    StringBuilder builder = new StringBuilder();
-                    for (String bookAuthorName : allAuthors) {
-                        builder.append(bookAuthorName + ", ");
-                    }
-                    // removing the last comma and space from end of the last name in the list
-                    builder.setLength(builder.length() - 2);
-                    bookAuthorsComplete = builder.toString();
-                } else bookAuthorsComplete = allAuthors.get(0).toString();
 
                 //Download the book covers and save them as Bitmap
                 Bitmap coverBmp = BitmapFactory.decodeStream((InputStream) new URL(bookCoverUrl).getContent());
@@ -116,8 +120,6 @@ public class DataHandler {
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
             Log.e(LOG_TAG, "Problem parsing the Books JSON results", e);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -126,7 +128,7 @@ public class DataHandler {
         return books;
     }
 
-    public static String makeHttpRequest(URL url) throws IOException {
+    private static String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
 
         // If the URL is null, then return early.

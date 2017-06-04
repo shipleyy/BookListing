@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 
-public class BookAdapter extends ArrayAdapter<Book> {
+class BookAdapter extends ArrayAdapter<Book> {
 
     public BookAdapter(@NonNull Context context, @NonNull ArrayList<Book> objects) {
         super(context, 0, objects);
@@ -41,6 +41,7 @@ public class BookAdapter extends ArrayAdapter<Book> {
         Book currentBook = getItem(position);
 
         // Display the information from the current book in the list
+        assert currentBook != null;
         holder.bookAuthor.setText(currentBook.getAuthorName());
         holder.bookTitle.setText(currentBook.getTitle());
         holder.bookCover.setImageBitmap(currentBook.getCoverBmp());

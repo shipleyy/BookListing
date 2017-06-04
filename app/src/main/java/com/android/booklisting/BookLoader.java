@@ -1,9 +1,10 @@
 package com.android.booklisting;
 
 import android.content.Context;
+
 import java.util.ArrayList;
 
-public class BookLoader extends android.content.AsyncTaskLoader<ArrayList<Book>> {
+class BookLoader extends android.content.AsyncTaskLoader<ArrayList<Book>> {
 
     private String apiUrl;
 
@@ -22,7 +23,6 @@ public class BookLoader extends android.content.AsyncTaskLoader<ArrayList<Book>>
         if (apiUrl == null) {
             return null;
         }
-        ArrayList<Book> books = DataHandler.getBookData(apiUrl);
-        return books;
+        return DataHandler.getBookData(getContext(), apiUrl);
     }
 }

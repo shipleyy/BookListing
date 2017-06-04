@@ -16,8 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import static android.view.View.GONE;
@@ -32,20 +30,20 @@ public class MainActivity extends AppCompatActivity
     // The part of the URL after the query text
     private static final String GOOGLE_API_QUERY_END = "&maxResults=10&langRestrict=en&key=AIzaSyDnGMJHBQ32dYQ4pIhtdS_xf1-swM5-zeg";
     // The complete API URL unique for each query
-    String apiUrl;
+    private String apiUrl;
     // Has internet connectivity
-    boolean isConnected;
+    private boolean isConnected;
     // Declares the adapter
     private BookAdapter mAdapter;
     // Declares the progressBar
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
     // Declares the TextViews
-    TextView searchResultsHeader;
-    TextView noItems;
+    private TextView searchResultsHeader;
+    private TextView noItems;
     // Declare the ListView
-    ListView listView;
+    private ListView listView;
     // Declaring a boolean to check if this is a first run
-    boolean firstRun;
+    private boolean firstRun;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity
         loaderManager.initLoader(BOOK_LOADER_ID, null, this);
 
         // If the activity is just created, show TextView with description
-        if (firstRun == true) {
+        if (firstRun) {
             noItems.setText(R.string.first_run);
             noItems.setVisibility(View.VISIBLE);
         } else {
@@ -141,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
         if (data != null && !data.isEmpty()) {
             mAdapter.addAll(data);
-        } else if (firstRun == false) {
+        } else if (!firstRun) {
             noItems.setText(R.string.tv_no_items);
             noItems.setVisibility(View.VISIBLE);
         }
